@@ -287,3 +287,6 @@ clean-inst-w32:
 clean-host: clean-obj-bin clean-obj-gcc clean-obj-libc
 
 clean-w32: clean-obj-bin-w32 clean-obj-gcc-w32
+
+make.png: make.dot
+	dot $< -Tpng > $@
