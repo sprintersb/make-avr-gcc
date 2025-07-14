@@ -5,16 +5,46 @@
 .PHONY: help
 
 help:
-	echo "Help"
+	@echo "Make avr-gcc in Canadian Cross configuration for MinGW32."
+	@echo ""
+	@echo "The simplest way is to run"
+	@echo "    $$ make GCC_VERSION=8.5.1 -j88 JOBS=88 install-w32"
+	@echo "    $$ make GCC_VERSION=8.5.1 deploy-w32"
+	@echo "which will download and prepare the sources, configure, build"
+	@echo "and install a native-cross (which is needed for the canadian)"
+	@echo "and a canadian-cross."
+	@echo ""
+	@echo "make deploy-w32 will take whatever it finds in install-w32 and"
+	@echo ".tar.xz it with appropriate directory name, date and ABOUT.txt."
+	@echo ""
+	@echo "Notice that this Makefile assumes all required software has"
+	@echo "been installed on the build machine, including a GCC toolchain,"
+	@echo "a GCC cross compiler to i686-w64-mingw32 (or similar), LaTeX,"
+	@echo "Doxygen v1.9.6, fig2dev and probably many more."
+	@echo ""
+	@echo "Makefile variables that can be adjusted on the command line:"
+	@echo "* JOBS        (1)"
+	@echo "* HOST_W32    (i686-w64-mingw32)"
+	@echo "* GCC_VERSION (15.1)"
+	@echo "* TAG_GCC     (releases/gcc-\$$(GCC_VERSION).0) except for v8.5.1"
+	@echo "* TAG_BIN     (binutils-2_44)"
+	@echo "* TAG_LIBC    (main)"
+	@echo ""
+	@echo "In order to build a GCC branch, use TAG_GCC=releases/gcc-15."
+	@echo "In order to build a LibC release, use TAG_LIBC=avr-libc-2_2_1-release."
+	@echo ""
 
 # So that | tee doesn't spoil the exit status.
 SHELL=/usr/bin/bash
 .SHELLFLAGS = -o pipefail -ec
 
+JOBS ?= 1
+J = -j$(JOBS)
+
 PREFIX = $(PWD)/install-host
 PREFIX_W32 = $(PWD)/install-w32
 
-HOST_W32 = i686-w64-mingw32
+HOST_W32 ?= i686-w64-mingw32
 BUILD = $(shell $(PWD)/src-libc/config.guess)
 
 # For now, we only support cloning from Git repos.
@@ -34,7 +64,7 @@ GCC_VERSION ?= 15.1
 ifneq ($(GCC_VERSION),8.5.1)
 URL_GCC = https://gcc.gnu.org
 GIT_GCC = git://gcc.gnu.org/git/gcc.git
-TAG_GCC = releases/gcc-$(GCC_VERSION).0
+TAG_GCC ?= releases/gcc-$(GCC_VERSION).0
 CONF_GCC = --with-long-double=64
 else
 URL_GCC = https://github.com/sprintersb/avr-gcc-8
@@ -69,7 +99,7 @@ CONF_LIBC = --host=avr --build=$(BUILD)
 TEE  = 2>&1 | tee $(PWD)
 TEEa = 2>&1 | tee -a $(PWD)
 
-# Make commands require the native-cross toolchain.
+# Many commands require the native-cross toolchain.
 E = export PATH=$(PREFIX)/bin:$$PATH;
 
 STAMP = echo timestamp >
@@ -90,16 +120,16 @@ s-conf-bin: s-src-bin
 
 s-obj-bin: s-conf-bin
 	echo "=== $@ ===" $(TEE)/obj-bin.log
-	cd obj-bin; make -j44      $(TEEa)/obj-bin.log
-	cd obj-bin; make -j44 html $(TEEa)/obj-bin.log
-#	cd obj-bin; make -j44 pdf  $(TEEa)/obj-bin.log
+	cd obj-bin; make $J      $(TEEa)/obj-bin.log
+	cd obj-bin; make $J html $(TEEa)/obj-bin.log
+#	cd obj-bin; make $J pdf  $(TEEa)/obj-bin.log
 	$(STAMP) $@
 
 s-inst-bin: s-obj-bin
 	echo "=== $@ ===" $(TEE)/inst-bin.log
-	cd obj-bin; make -j44 install      $(TEEa)/inst-bin.log
-	cd obj-bin; make -j44 install-html $(TEEa)/inst-bin.log
-#	cd obj-bin; make -j44 install-pdf  $(TEEa)/inst-bin.log
+	cd obj-bin; make $J install      $(TEEa)/inst-bin.log
+	cd obj-bin; make $J install-html $(TEEa)/inst-bin.log
+#	cd obj-bin; make $J install-pdf  $(TEEa)/inst-bin.log
 	$(STAMP) $@
 
 s-conf-bin-w32: s-src-bin
@@ -111,16 +141,16 @@ s-conf-bin-w32: s-src-bin
 
 s-obj-bin-w32: s-conf-bin-w32
 	echo "=== $@ ===" $(TEE)/obj-bin-w32.log
-	cd obj-bin-w32; make -j44      $(TEEa)/obj-bin-w32.log
-	cd obj-bin-w32; make -j44 html $(TEEa)/obj-bin-w32.log
-#	cd obj-bin-w32; make -j44 pdf  $(TEEa)/obj-bin-w32.log
+	cd obj-bin-w32; make $J      $(TEEa)/obj-bin-w32.log
+	cd obj-bin-w32; make $J html $(TEEa)/obj-bin-w32.log
+#	cd obj-bin-w32; make $J pdf  $(TEEa)/obj-bin-w32.log
 	$(STAMP) $@
 
 s-inst-bin-w32: s-obj-bin-w32
 	echo "=== $@ ===" $(TEE)/inst-bin-w32.log
-	cd obj-bin-w32; make -j44 install      $(TEEa)/inst-bin-w32.log
-	cd obj-bin-w32; make -j44 install-html $(TEEa)/inst-bin-w32.log
-#	cd obj-bin-w32; make -j44 install-pdf  $(TEEa)/inst-bin-w32.log
+	cd obj-bin-w32; make $J install      $(TEEa)/inst-bin-w32.log
+	cd obj-bin-w32; make $J install-html $(TEEa)/inst-bin-w32.log
+#	cd obj-bin-w32; make $J install-pdf  $(TEEa)/inst-bin-w32.log
 	$(STAMP) $@
 
 ### GCC ###
@@ -141,17 +171,17 @@ s-conf-gcc: s-src-gcc s-inst-bin
 
 s-obj-gcc: s-conf-gcc
 	echo "=== $@ ===" $(TEE)/obj-gcc.log
-	cd obj-gcc; make -j88      $(TEEa)/obj-gcc.log
-	cd obj-gcc; make -j44 html $(TEEa)/obj-gcc.log
-#	cd obj-gcc; make -j44 pdf  $(TEEa)/obj-gcc.log
+	cd obj-gcc; make $J      $(TEEa)/obj-gcc.log
+	cd obj-gcc; make $J html $(TEEa)/obj-gcc.log
+#	cd obj-gcc; make $J pdf  $(TEEa)/obj-gcc.log
 	$(STAMP) $@
 
 s-inst-gcc: s-obj-gcc
 	echo "=== $@ ===" $(TEE)/inst-gcc.log
-	cd obj-gcc; make -j88 install-strip-host $(TEEa)/inst-gcc.log
-	cd obj-gcc; make -j88 install-target     $(TEEa)/inst-gcc.log
-	cd obj-gcc; make -j44 install-html       $(TEEa)/inst-gcc.log
-#	cd obj-gcc; make -j44 install-pdf        $(TEEa)/inst-gcc.log
+	cd obj-gcc; make $J install-strip-host $(TEEa)/inst-gcc.log
+	cd obj-gcc; make $J install-target     $(TEEa)/inst-gcc.log
+	cd obj-gcc; make $J install-html       $(TEEa)/inst-gcc.log
+#	cd obj-gcc; make $J install-pdf        $(TEEa)/inst-gcc.log
 	$(STAMP) $@
 
 s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 s-inst-libc
@@ -163,19 +193,19 @@ s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 s-inst-libc
 
 s-obj-gcc-w32: s-conf-gcc-w32
 	echo "=== $@ ===" $(TEE)/obj-gcc-w32.log
-	$E cd obj-gcc-w32; make -j88 CPPFLAGS="$(CPPFLAGS_W32)" all-host $(TEEa)/obj-gcc-w32.log
+	$E cd obj-gcc-w32; make $J CPPFLAGS="$(CPPFLAGS_W32)" all-host $(TEEa)/obj-gcc-w32.log
 	$(STAMP) $@
 
 s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 	echo "=== $@ ===" $(TEE)/inst-gcc-w32.log
-	$E cd obj-gcc-w32; make -j88 install-strip-host              $(TEEa)/inst-gcc-w32.log
-	$E cd obj-gcc; make -j88 install-target prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
-	$E cd obj-gcc; make -j44 install-html   prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
-#	$E cd obj-gcc; make -j44 install-pdf    prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
-	$E cd obj-libc; make -j44 install prefix=$(PREFIX_W32)       $(TEEa)/inst-gcc-w32.log
-	$E cd obj-libc/doc/api; make clean                           $(TEEa)/inst-gcc-w32.log
-	$E cd obj-libc/doc/api; make html                            $(TEEa)/inst-gcc-w32.log
-#	$E cd obj-libc/doc/api; make pdf                             $(TEEa)/inst-gcc-w32.log
+	$E cd obj-gcc-w32; make $J install-strip-host              $(TEEa)/inst-gcc-w32.log
+	$E cd obj-gcc; make $J install-target prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
+	$E cd obj-gcc; make $J install-html   prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
+#	$E cd obj-gcc; make $J install-pdf    prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
+	$E cd obj-libc; make $J install prefix=$(PREFIX_W32)       $(TEEa)/inst-gcc-w32.log
+	$E cd obj-libc/doc/api; make clean                         $(TEEa)/inst-gcc-w32.log
+	$E cd obj-libc/doc/api; make html                          $(TEEa)/inst-gcc-w32.log
+#	$E cd obj-libc/doc/api; make pdf                           $(TEEa)/inst-gcc-w32.log
 	$E cd obj-libc/doc/api; make install-dox-html prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 	$(STAMP) $@
 
@@ -196,12 +226,12 @@ s-conf-libc: s-src-libc s-inst-gcc
 
 s-obj-libc: s-conf-libc
 	echo "=== $@ ===" $(TEE)/obj-libc.log
-	$E cd obj-libc; make -j88 $(TEEa)/obj-libc.log
+	$E cd obj-libc; make $J $(TEEa)/obj-libc.log
 	$(STAMP) $@
 
 s-inst-libc: s-obj-libc
 	echo "=== $@ ===" $(TEE)/inst-libc.log
-	$E cd obj-libc; make -j88 install $(TEEa)/inst-libc.log
+	$E cd obj-libc; make $J install $(TEEa)/inst-libc.log
 	$(STAMP) $@
 
 .PHONY: all-host all-w32 install-host install-w32
