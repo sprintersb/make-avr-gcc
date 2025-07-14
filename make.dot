@@ -19,10 +19,10 @@ digraph
             label = "Binutils";
             bgcolor = "white";
             bin_i [label="install", fillcolor="#ddddff"];
-            bin_o[label="obj", fillcolor="#ddddff"];
+            bin_m[label="make", fillcolor="#ddddff"];
             bin_c[label="conf", fillcolor="#ddddff"];
             bin_s[label="src"];
-            bin_i -> bin_o -> bin_c -> bin_s;
+            bin_i -> bin_m -> bin_c -> bin_s;
         }
 
         subgraph cluster_gcc
@@ -30,10 +30,10 @@ digraph
             label = "GCC";
             bgcolor = "white";
             gcc_i [label="install", fillcolor="#ddddff"];
-            gcc_o[label="obj", fillcolor="#ddddff"];
+            gcc_m[label="make", fillcolor="#ddddff"];
             gcc_c[label="conf", fillcolor="#ddddff"];
             gcc_s[label="src"];
-            gcc_i -> gcc_o -> gcc_c -> gcc_s;
+            gcc_i -> gcc_m -> gcc_c -> gcc_s;
         }
 
         subgraph cluster_libc
@@ -41,10 +41,10 @@ digraph
             label = "LibC";
             bgcolor = "white";
             libc_i [label="install", fillcolor="#ddddff"];
-            libc_o[label="obj", fillcolor="#ddddff"];
+            libc_m[label="make", fillcolor="#ddddff"];
             libc_c[label="conf", fillcolor="#ddddff"];
             libc_s[label="src"];
-            libc_i -> libc_o -> libc_c -> libc_s;
+            libc_i -> libc_m -> libc_c -> libc_s;
         }
 
         { rank=same; bin_i; gcc_i; libc_i; }
@@ -62,10 +62,10 @@ digraph
             label = "Binutils Win";
             bgcolor = "white";
             binW_i [label="install"; fillcolor="#ffddcc"];
-            binW_o[label="obj"; fillcolor="#ffddcc"];
+            binW_m[label="make"; fillcolor="#ffddcc"];
             binW_c[label="conf"; fillcolor="#ffddcc"];
             binW_s[label="src"];
-            binW_i -> binW_o -> binW_c -> binW_s;
+            binW_i -> binW_m -> binW_c -> binW_s;
         }
 
         subgraph cluster_gccW
@@ -74,27 +74,27 @@ digraph
             bgcolor = "white";
             gccW_ih [label="install\n-host"; fillcolor="#ffddcc"];
             gccW_it [label="install\n-target"; fillcolor="#ffddcc"];
-            gcc_o_x [label="GCC obj", fillcolor="#ddddff"];
+            gcc_m_x [label="GCC make", fillcolor="#ddddff"];
             libc_i_x [label="LibC install", fillcolor="#ddddff"];
-            gccW_o[label="obj"; fillcolor="#ffddcc"];
+            gccW_m[label="make\nall-host"; fillcolor="#ffddcc"];
             gccW_c[label="conf"; fillcolor="#ffddcc"];
             gccW_s[label="src"];
-            gccW_ih -> gccW_o -> gccW_c -> gccW_s;
+            gccW_ih -> gccW_m -> gccW_c -> gccW_s;
         }
 
         { rank=same; binW_i; gccW_ih; gccW_it; libcW_i; }
 
         gccW_c -> binW_i;
         gccW_c -> libc_i_x;
-        gccW_it -> gcc_o_x;
+        gccW_it -> gcc_m_x;
 
         subgraph cluster_libcW
         {
             label = "LibC Win";
             bgcolor = "white";
             libcW_i [label="install"; fillcolor="#ffddcc"];
-            libc_o_x [label="LibC obj", fillcolor="#ddddff"];
+            libc_m_x [label="LibC make", fillcolor="#ddddff"];
         }
     }
-    libcW_i -> libc_o_x;
+    libcW_i -> libc_m_x;
 }
