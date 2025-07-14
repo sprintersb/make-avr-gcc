@@ -70,6 +70,7 @@ else
 URL_GCC = https://github.com/sprintersb/avr-gcc-8
 GIT_GCC = https://github.com/sprintersb/avr-gcc-8.git
 TAG_GCC = releases/gcc-8
+CONF_GCC = --with-bugurl=https://github.com/sprintersb/avr-gcc-8/issues
 endif
 
 # AVR-LibC tags are like avr-libc-2_2_1-release.
