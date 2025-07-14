@@ -74,8 +74,8 @@ digraph
             bgcolor = "white";
             gccW_ih [label="install\n-host"; fillcolor="#ffddcc"];
             gccW_it [label="install\n-target"; fillcolor="#ffddcc"];
-            gcc_m_x [label="GCC make", fillcolor="#ddddff"];
-            libc_i_x [label="LibC install", fillcolor="#ddddff"];
+            gcc_m_x [label="GCC\nmake", fillcolor="#ddddff"];
+            libc_i_x [label="LibC\ninstall", fillcolor="#ddddff"];
             gccW_m[label="make\nall-host"; fillcolor="#ffddcc"];
             gccW_c[label="conf"; fillcolor="#ffddcc"];
             gccW_s[label="src"];
@@ -93,7 +93,7 @@ digraph
             label = "LibC Win";
             bgcolor = "white";
             libcW_i [label="install"; fillcolor="#ffddcc"];
-            libc_m_x [label="LibC make", fillcolor="#ddddff"];
+            libc_m_x [label="LibC\nmake", fillcolor="#ddddff"];
         }
     }
     libcW_i -> libc_m_x;
