@@ -59,62 +59,69 @@ CONF_GCC += --enable-checking=release
 
 CONF_GCC_W32 = $(CONF_GCC) --host=$(HOST_W32) --build=$(BUILD) --enable-mingw-wildcard
 
+# There is a bug where gcc/system.h defines abort() to fancy_abort(...),
+# but /usr/share/mingw-w64/include/msxml.h uses abort() in a declaration,
+# leading to a syntax error.  This is worked around now.
+CPPFLAGS_W32 = -DWIN32_LEAN_AND_MEAN -DCOM_NO_WINDOWS_H
+
 CONF_LIBC = --host=avr --build=$(BUILD)
 
 TEE  = 2>&1 | tee $(PWD)
 TEEa = 2>&1 | tee -a $(PWD)
 
-# Maky commands require the native-cross toolchain.
+# Make commands require the native-cross toolchain.
 E = export PATH=$(PREFIX)/bin:$$PATH;
+
+STAMP = echo timestamp >
 
 ### Binutils ###
 
 s-src-bin:
 	echo "=== $@ ===" $(TEE)/src-bin.log
 	$(Git) $(TAG_BIN) $(GIT_BIN) src-bin $(TEEa)/src-bin.log
-	touch $@
+	$(STAMP) $@
 
 s-conf-bin: s-src-bin
 	echo "=== $@ ===" $(TEE)/conf-bin.log
 	rm -rf obj-bin
 	mkdir obj-bin
 	cd obj-bin; ../src-bin/configure $(CONF_BIN) --prefix=$(PREFIX) $(TEEa)/conf-bin.log
-	touch $@
+	$(STAMP) $@
 
 s-obj-bin: s-conf-bin
 	echo "=== $@ ===" $(TEE)/obj-bin.log
 	cd obj-bin; make -j44      $(TEEa)/obj-bin.log
 	cd obj-bin; make -j44 html $(TEEa)/obj-bin.log
 #	cd obj-bin; make -j44 pdf  $(TEEa)/obj-bin.log
-	touch $@
+	$(STAMP) $@
 
 s-inst-bin: s-obj-bin
 	echo "=== $@ ===" $(TEE)/inst-bin.log
 	cd obj-bin; make -j44 install      $(TEEa)/inst-bin.log
 	cd obj-bin; make -j44 install-html $(TEEa)/inst-bin.log
 #	cd obj-bin; make -j44 install-pdf  $(TEEa)/inst-bin.log
-	touch $@
+	$(STAMP) $@
 
 s-conf-bin-w32: s-src-bin
 	echo "=== $@ ===" $(TEE)/conf-bin-w32.log
 	rm -rf obj-bin-w32
 	mkdir obj-bin-w32
 	cd obj-bin-w32; ../src-bin/configure $(CONF_BIN_W32) --prefix=$(PREFIX_W32) $(TEEa)/conf-bin-w32.log
-	touch $@
+	$(STAMP) $@
 
 s-obj-bin-w32: s-conf-bin-w32
 	echo "=== $@ ===" $(TEE)/obj-bin-w32.log
 	cd obj-bin-w32; make -j44      $(TEEa)/obj-bin-w32.log
 	cd obj-bin-w32; make -j44 html $(TEEa)/obj-bin-w32.log
 #	cd obj-bin-w32; make -j44 pdf  $(TEEa)/obj-bin-w32.log
-	touch $@
+	$(STAMP) $@
 
 s-inst-bin-w32: s-obj-bin-w32
 	echo "=== $@ ===" $(TEE)/inst-bin-w32.log
 	cd obj-bin-w32; make -j44 install      $(TEEa)/inst-bin-w32.log
 	cd obj-bin-w32; make -j44 install-html $(TEEa)/inst-bin-w32.log
 #	cd obj-bin-w32; make -j44 install-pdf  $(TEEa)/inst-bin-w32.log
-	touch $@
+	$(STAMP) $@
 
 ### GCC ###
 
@@ -123,21 +130,21 @@ s-src-gcc:
 	$(Git) $(TAG_GCC) $(GIT_GCC) src-gcc         $(TEEa)/src-gcc.log
 	cd src-gcc; ./contrib/gcc_update --touch     $(TEEa)/src-gcc.log
 	cd src-gcc; ./contrib/download_prerequisites $(TEEa)/src-gcc.log
-	touch $@
+	$(STAMP) $@
 
 s-conf-gcc: s-src-gcc s-inst-bin
 	echo "=== $@ ===" $(TEE)/conf-gcc.log
 	rm -rf obj-gcc
 	mkdir obj-gcc
 	cd obj-gcc; ../src-gcc/configure $(CONF_GCC) --prefix=$(PREFIX) $(TEEa)/conf-gcc.log
-	touch $@
+	$(STAMP) $@
 
 s-obj-gcc: s-conf-gcc
 	echo "=== $@ ===" $(TEE)/obj-gcc.log
 	cd obj-gcc; make -j88      $(TEEa)/obj-gcc.log
 	cd obj-gcc; make -j44 html $(TEEa)/obj-gcc.log
 #	cd obj-gcc; make -j44 pdf  $(TEEa)/obj-gcc.log
-	touch $@
+	$(STAMP) $@
 
 s-inst-gcc: s-obj-gcc
 	echo "=== $@ ===" $(TEE)/inst-gcc.log
@@ -145,19 +152,19 @@ s-inst-gcc: s-obj-gcc
 	cd obj-gcc; make -j88 install-target     $(TEEa)/inst-gcc.log
 	cd obj-gcc; make -j44 install-html       $(TEEa)/inst-gcc.log
 #	cd obj-gcc; make -j44 install-pdf        $(TEEa)/inst-gcc.log
-	touch $@
+	$(STAMP) $@
 
-s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 install-host
+s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 s-inst-libc
 	echo "=== $@ ===" $(TEE)/conf-gcc-w32.log
 	rm -rf obj-gcc-w32
 	mkdir obj-gcc-w32
 	$E cd obj-gcc-w32; ../src-gcc/configure $(CONF_GCC_W32) --prefix=$(PREFIX_W32) $(TEEa)/conf-gcc-w32.log
-	touch $@
+	$(STAMP) $@
 
 s-obj-gcc-w32: s-conf-gcc-w32
 	echo "=== $@ ===" $(TEE)/obj-gcc-w32.log
-	$E cd obj-gcc-w32; make -j88 all-host $(TEEa)/obj-gcc-w32.log
-	touch $@
+	$E cd obj-gcc-w32; make -j88 CPPFLAGS="$(CPPFLAGS_W32)" all-host $(TEEa)/obj-gcc-w32.log
+	$(STAMP) $@
 
 s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 	echo "=== $@ ===" $(TEE)/inst-gcc-w32.log
@@ -170,7 +177,7 @@ s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 	$E cd obj-libc/doc/api; make html                            $(TEEa)/inst-gcc-w32.log
 #	$E cd obj-libc/doc/api; make pdf                             $(TEEa)/inst-gcc-w32.log
 	$E cd obj-libc/doc/api; make install-dox-html prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
-	touch $@
+	$(STAMP) $@
 
 ### AVR-LibC ###
 
@@ -178,24 +185,24 @@ s-src-libc:
 	echo "=== $@ ===" $(TEE)/src-libc.log
 	$(Git) $(TAG_LIBC) $(GIT_LIBC) src-libc $(TEEa)/src-libc.log
 	cd src-libc; ./bootstrap                $(TEEa)/src-libc.log
-	touch $@
+	$(STAMP) $@
 
 s-conf-libc: s-src-libc s-inst-gcc
 	echo "=== $@ ===" $(TEE)/conf-libc.log
 	rm -rf obj-libc
 	mkdir obj-libc
 	$E cd obj-libc; ../src-libc/configure $(CONF_LIBC) --prefix=$(PREFIX) $(TEEa)/conf-libc.log
-	touch $@
+	$(STAMP) $@
 
 s-obj-libc: s-conf-libc
 	echo "=== $@ ===" $(TEE)/obj-libc.log
 	$E cd obj-libc; make -j88 $(TEEa)/obj-libc.log
-	touch $@
+	$(STAMP) $@
 
 s-inst-libc: s-obj-libc
 	echo "=== $@ ===" $(TEE)/inst-libc.log
 	$E cd obj-libc; make -j88 install $(TEEa)/inst-libc.log
-	touch $@
+	$(STAMP) $@
 
 .PHONY: all-host all-w32 install-host install-w32
 
