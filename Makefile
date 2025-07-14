@@ -354,3 +354,6 @@ clean-w32: clean-bin-w32 clean-gcc-w32
 
 make.png: make.dot
 	dot $< -Tpng > $@
+
+make.svg: make.dot
+	dot $< -Tsvg > $@
