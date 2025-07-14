@@ -204,9 +204,6 @@ s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 	$E cd obj-gcc; make $J install-html   prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 #	$E cd obj-gcc; make $J install-pdf    prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 	$E cd obj-libc; make $J install prefix=$(PREFIX_W32)       $(TEEa)/inst-gcc-w32.log
-	$E cd obj-libc/doc/api; make clean                         $(TEEa)/inst-gcc-w32.log
-	$E cd obj-libc/doc/api; make html                          $(TEEa)/inst-gcc-w32.log
-#	$E cd obj-libc/doc/api; make pdf                           $(TEEa)/inst-gcc-w32.log
 	$E cd obj-libc/doc/api; make install-dox-html prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 	$(STAMP) $@
 
@@ -232,7 +229,11 @@ s-obj-libc: s-conf-libc
 
 s-inst-libc: s-obj-libc
 	echo "=== $@ ===" $(TEE)/inst-libc.log
-	$E cd obj-libc; make $J install $(TEEa)/inst-libc.log
+	$E cd obj-libc; make $J install               $(TEEa)/inst-libc.log
+	$E cd obj-libc/doc/api; make clean            $(TEEa)/inst-libc.log
+	$E cd obj-libc/doc/api; make html             $(TEEa)/inst-libc.log
+#	$E cd obj-libc/doc/api; make pdf              $(TEEa)/inst-libc.log
+	$E cd obj-libc/doc/api; make install-dox-html $(TEEa)/inst-libc.log
 	$(STAMP) $@
 
 .PHONY: all-host all-w32 install-host install-w32
