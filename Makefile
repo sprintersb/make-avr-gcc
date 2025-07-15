@@ -210,8 +210,10 @@ s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 	$E cd obj-libc;    make $J install        prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 	$H $E cd obj-gcc;  make $J install-html          prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
 	$H $E cd obj-libc/doc/api; make install-dox-html prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
+	$(RM) $(AVRDUDE_ZIP)
 	wget -nv $(AVRDUDE_ZIP_URL)                        $(TEEa)/inst-gcc-w32.log
-	cd $(PREFIX_W32)/bin; jar tf $(PWD)/$(AVRDUDE_ZIP) $(TEEa)/inst-gcc-w32.log
+	cd $(PREFIX_W32)/bin; jar xf $(PWD)/$(AVRDUDE_ZIP) $(TEEa)/inst-gcc-w32.log
+	cd $(PREFIX_W32)/bin; chmod +x avrdude.exe;        $(TEEa)/inst-gcc-w32.log
 	$(STAMP) $@
 
 ### AVR-LibC ###
