@@ -354,6 +354,7 @@ clean-w32: clean-bin-w32 clean-gcc-w32
 
 .PHONY: dot png svg clean-dot clean-svg clean-png clean
 
+dot: make.dot make-host.dot make-canadian.dot
 png: make.png make-host.png make-canadian.png
 svg: make.svg make-host.svg make-canadian.svg
 
@@ -367,7 +368,7 @@ CPP = gcc -undef -C -P -E
 CPP = m4
 
 make.dot: make.h cluster-host.h cluster-canadian.h
-	$(CPP) $< >$@
+	$(CPP) $< > $@
 
 make-host.dot: make-host.h cluster-host.h
 	$(CPP) $< > $@
