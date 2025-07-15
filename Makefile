@@ -29,6 +29,7 @@ help:
 	@echo "* TAG_GCC     (releases/gcc-\$$(GCC_VERSION).0) except for v8.5.1"
 	@echo "* TAG_BIN     (binutils-2_44)"
 	@echo "* TAG_LIBC    (main)"
+	@echo "* AVRDUDE_VERSION (8.1)"
 	@echo ""
 	@echo "In order to build a GCC branch, use TAG_GCC=releases/gcc-15."
 	@echo "In order to build a LibC release, use TAG_LIBC=avr-libc-2_2_1-release."
@@ -57,6 +58,8 @@ GIT_BIN = git://sourceware.org/git/binutils-gdb.git
 TAG_BIN ?= binutils-2_44
 
 GCC_VERSION ?= 15.1
+
+AVRDUDE_VERSION ?= 8.1
 
 # GCC branches are like releases/gcc-15 or trunk.
 # GCC tags are like releases/gcc-15.1.0
@@ -97,8 +100,11 @@ CPPFLAGS_W32 = -DWIN32_LEAN_AND_MEAN -DCOM_NO_WINDOWS_H
 
 CONF_LIBC = --host=avr --build=$(BUILD)
 
-TEE  = 2>&1 | tee $(PWD)
-TEEa = 2>&1 | tee -a $(PWD)
+AVRDUDE_ZIP = avrdude-v$(AVRDUDE_VERSION)-windows-mingw-x64.zip
+AVRDUDE_ZIP_URL = https://github.com/avrdudes/avrdude/releases/download/v$(AVRDUDE_VERSION)/$(AVRDUDE_ZIP)
+
+TEE  := 2>&1 | tee $(PWD)
+TEEa := 2>&1 | tee -a $(PWD)
 
 # Many commands require the native-cross toolchain.
 E = export PATH=$(PREFIX)/bin:$$PATH;
@@ -206,6 +212,8 @@ s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 #	$E cd obj-gcc; make $J install-pdf    prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 	$E cd obj-libc; make $J install prefix=$(PREFIX_W32)       $(TEEa)/inst-gcc-w32.log
 	$E cd obj-libc/doc/api; make install-dox-html prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
+	wget -nv $(AVRDUDE_ZIP_URL)                        $(TEEa)/inst-gcc-w32.log
+	cd $(PREFIX_W32)/bin; jar tf $(PWD)/$(AVRDUDE_ZIP) $(TEEa)/inst-gcc-w32.log
 	$(STAMP) $@
 
 ### AVR-LibC ###
@@ -273,6 +281,9 @@ WNAME = avr-gcc-$(GCC_VERSION)_$(shell date -u +'%F')_mingw32
 HNAME = avr-gcc-$(GCC_VERSION)_$(shell date -u +'%F')_x86_64
 
 deploy-w32: ABOUT.txt
+	echo >> ABOUT.txt
+	echo "=== AVRDUDE ==="  >> ABOUT.txt
+	echo $(AVRDUDE_ZIP_URL) >> ABOUT.txt
 	cp ABOUT.txt install-w32
 	ln -s install-w32 $(WNAME)
 	tar chfJ $(WNAME).tar.xz $(WNAME)
