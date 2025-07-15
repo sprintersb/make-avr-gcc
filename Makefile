@@ -104,6 +104,7 @@ TEEa = 2>&1 | tee -a $(PWD)
 E = export PATH=$(PREFIX)/bin:$$PATH;
 
 STAMP = echo timestamp >
+RM = rm -rf --
 
 ### Binutils ###
 
@@ -114,7 +115,7 @@ s-src-bin:
 
 s-conf-bin: s-src-bin
 	echo "=== $@ ===" $(TEE)/conf-bin.log
-	rm -rf obj-bin
+	$(RM) obj-bin
 	mkdir obj-bin
 	cd obj-bin; ../src-bin/configure $(CONF_BIN) --prefix=$(PREFIX) $(TEEa)/conf-bin.log
 	$(STAMP) $@
@@ -135,7 +136,7 @@ s-inst-bin: s-obj-bin
 
 s-conf-bin-w32: s-src-bin
 	echo "=== $@ ===" $(TEE)/conf-bin-w32.log
-	rm -rf obj-bin-w32
+	$(RM) obj-bin-w32
 	mkdir obj-bin-w32
 	cd obj-bin-w32; ../src-bin/configure $(CONF_BIN_W32) --prefix=$(PREFIX_W32) $(TEEa)/conf-bin-w32.log
 	$(STAMP) $@
@@ -165,7 +166,7 @@ s-src-gcc:
 
 s-conf-gcc: s-src-gcc s-inst-bin
 	echo "=== $@ ===" $(TEE)/conf-gcc.log
-	rm -rf obj-gcc
+	$(RM) obj-gcc
 	mkdir obj-gcc
 	cd obj-gcc; ../src-gcc/configure $(CONF_GCC) --prefix=$(PREFIX) $(TEEa)/conf-gcc.log
 	$(STAMP) $@
@@ -187,7 +188,7 @@ s-inst-gcc: s-obj-gcc
 
 s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 s-inst-libc
 	echo "=== $@ ===" $(TEE)/conf-gcc-w32.log
-	rm -rf obj-gcc-w32
+	$(RM) obj-gcc-w32
 	mkdir obj-gcc-w32
 	$E cd obj-gcc-w32; ../src-gcc/configure $(CONF_GCC_W32) --prefix=$(PREFIX_W32) $(TEEa)/conf-gcc-w32.log
 	$(STAMP) $@
@@ -217,7 +218,7 @@ s-src-libc:
 
 s-conf-libc: s-src-libc s-inst-gcc
 	echo "=== $@ ===" $(TEE)/conf-libc.log
-	rm -rf obj-libc
+	$(RM) obj-libc
 	mkdir obj-libc
 	$E cd obj-libc; ../src-libc/configure $(CONF_LIBC) --prefix=$(PREFIX) $(TEEa)/conf-libc.log
 	$(STAMP) $@
@@ -301,41 +302,41 @@ deploy-x86_64: ABOUT.txt
 .PHONY: clean-inst-bin-w32 clean-inst-gcc-w32
 
 clean-src-bin: clean-bin clean-bin-w32
-	rm -rf $(wildcard s-src-bin src-bin.log src-bin)
+	$(RM) $(wildcard s-src-bin src-bin.log src-bin)
 
 clean-src-gcc: clean-gcc clean-gcc-w32
-	rm -rf $(wildcard s-src-gcc src-gcc.log src-gcc)
+	$(RM) $(wildcard s-src-gcc src-gcc.log src-gcc)
 
 clean-src-libc: clean-libc
-	rm -rf $(wildcard s-src-libc src-libc.log src-libc)
+	$(RM) $(wildcard s-src-libc src-libc.log src-libc)
 
 clean-bin: clean-gcc clean-inst-bin
-	rm -rf $(wildcard s-conf-bin conf-bin.log)
-	rm -rf $(wildcard s-obj-bin   obj-bin.log obj-bin)
+	$(RM) $(wildcard s-conf-bin conf-bin.log)
+	$(RM) $(wildcard s-obj-bin   obj-bin.log obj-bin)
 
 clean-bin-w32: clean-inst-bin-w32 clean-gcc-w32
-	rm -rf $(wildcard s-conf-bin-w32 conf-bin-w32.log)
-	rm -rf $(wildcard s-obj-bin-w32   obj-bin-w32.log obj-bin-w32)
+	$(RM) $(wildcard s-conf-bin-w32 conf-bin-w32.log)
+	$(RM) $(wildcard s-obj-bin-w32   obj-bin-w32.log obj-bin-w32)
 
 clean-gcc: clean-inst-gcc clean-libc
-	rm -rf $(wildcard s-conf-gcc conf-gcc.log)
-	rm -rf $(wildcard s-obj-gcc   obj-gcc.log obj-gcc)
+	$(RM) $(wildcard s-conf-gcc conf-gcc.log)
+	$(RM) $(wildcard s-obj-gcc   obj-gcc.log obj-gcc)
 
 clean-gcc-w32: clean-inst-gcc-w32
-	rm -rf $(wildcard s-conf-gcc-w32 conf-gcc-w32.log)
-	rm -rf $(wildcard s-obj-gcc-w32   obj-gcc-w32.log obj-gcc-w32)
+	$(RM) $(wildcard s-conf-gcc-w32 conf-gcc-w32.log)
+	$(RM) $(wildcard s-obj-gcc-w32   obj-gcc-w32.log obj-gcc-w32)
 
 clean-libc: clean-inst-libc clean-inst-gcc-w32
-	rm -rf $(wildcard s-conf-libc conf-libc.log)
-	rm -rf $(wildcard s-obj-libc   obj-libc.log obj-libc)
+	$(RM) $(wildcard s-conf-libc conf-libc.log)
+	$(RM) $(wildcard s-obj-libc   obj-libc.log obj-libc)
 
 clean-inst-bin clean-inst-gcc clean-inst-libc:
-	rm -rf $(wildcard s-inst-bin s-inst-gcc s-inst-libc)
-	rm -rf $(wildcard $(PREFIX) inst-bin.log inst-gcc.log inst-libc.log)
+	$(RM) $(wildcard s-inst-bin s-inst-gcc s-inst-libc)
+	$(RM) $(wildcard $(PREFIX) inst-bin.log inst-gcc.log inst-libc.log)
 
 clean-inst-bin-w32 clean-inst-gcc-w32:
-	rm -rf $(wildcard s-inst-bin-w32 s-inst-gcc-w32)
-	rm -rf $(wildcard $(PREFIX_W32) inst-bin-w32.log inst-gcc-w32.log)
+	$(RM) $(wildcard s-inst-bin-w32 s-inst-gcc-w32)
+	$(RM) $(wildcard $(PREFIX_W32) inst-bin-w32.log inst-gcc-w32.log)
 
 clean-inst-bin: clean-gcc
 clean-inst-gcc: clean-libc
@@ -377,10 +378,10 @@ make-canadian.dot: make-canadian.h cluster-canadian.h
 	$(CPP) $< > $@
 
 clean-dot:
-	rm -rf -- $(wildcard make.dot make-host.dot make-canadian.dot)
+	$(RM) $(wildcard make.dot make-host.dot make-canadian.dot)
 
 clean-svg:
-	rm -rf -- $(wildcard *.svg)
+	$(RM) $(wildcard *.svg)
 
 clean-png:
-	rm -rf -- $(wildcard *.png)
+	$(RM) $(wildcard *.png)
