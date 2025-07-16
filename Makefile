@@ -31,6 +31,8 @@ help:
 	@echo "* TAG_LIBC    (main)"
 	@echo "* HTML        (1)"
 	@echo "* AVRDUDE_VERSION (8.1)"
+	@echo "* CONF        ()  # Extra GCC Native Cross config args"
+	@echo "* CONF_W32    ()  # Extra GCC Canadian Cross config args"
 	@echo ""
 	@echo "In order to build a GCC branch, use TAG_GCC=releases/gcc-15."
 	@echo "In order to build a LibC release, use TAG_LIBC=avr-libc-2_2_1-release."
@@ -49,7 +51,7 @@ PREFIX_W32 = $(PWD)/install-w32
 HOST_W32 ?= i686-w64-mingw32
 BUILD = $(shell $(PWD)/src-libc/config.guess)
 
-# Build and install HTML documenatation.
+# Build and install HTML documentation.
 HTML ?= 1
 
 # For now, we only support cloning from Git repos.
@@ -95,7 +97,10 @@ CONF_GCC += --with-gnu-as --with-gnu-ld --with-dwarf2
 CONF_GCC += --disable-nls --disable-libcc1 --disable-libssp --disable-plugin
 CONF_GCC += --enable-checking=release
 
-CONF_GCC_W32 = $(CONF_GCC) --host=$(HOST_W32) --build=$(BUILD) --enable-mingw-wildcard
+CONF_GCC_W32 += $(CONF_GCC) --host=$(HOST_W32) --build=$(BUILD) --enable-mingw-wildcard
+CONF_GCC_W32 += $(CONF_W32)
+
+CONF_GCC += $(CONF)
 
 # There is a bug where gcc/system.h defines abort() to fancy_abort(...),
 # but /usr/share/mingw-w64/include/msxml.h uses abort() in a declaration,
