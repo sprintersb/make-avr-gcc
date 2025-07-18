@@ -46,7 +46,7 @@ SHELL=/usr/bin/bash
 JOBS ?= 1
 J = -j$(JOBS)
 
-PREFIX = $(PWD)/install-host
+PREFIX = $(PWD)/install-native
 PREFIX_W32 = $(PWD)/install-w32
 
 HOST_W32 ?= i686-w64-mingw32
@@ -250,13 +250,13 @@ s-inst-libc: s-obj-libc
 	$H $E cd obj-libc/doc/api; make install-dox-html $(TEEa)/inst-libc.log; fi
 	$(STAMP) $@
 
-.PHONY: all-host all-w32 install-host install-w32
+.PHONY: all-native all-w32 install-native install-w32
 
-all-host: s-obj-bin s-obj-gcc s-obj-libc
+all-native: s-obj-bin s-obj-gcc s-obj-libc
 
 all-w32:  s-obj-bin-w32 s-obj-gcc-w32 s-obj-libc # sic! no s-obj-libc-w32
 
-install-host: s-inst-bin s-inst-gcc s-inst-libc
+install-native: s-inst-bin s-inst-gcc s-inst-libc
 
 install-w32: s-inst-bin-w32 s-inst-gcc-w32 # sic! no s-inst-libc-w32
 
@@ -296,8 +296,8 @@ deploy-w32: ABOUT.txt
 	unlink $(WNAME)
 
 deploy-x86_64: ABOUT.txt
-	cp ABOUT.txt install-host
-	ln -s install-host $(HNAME)
+	cp ABOUT.txt install-native
+	ln -s install-native $(HNAME)
 	tar chfJ $(HNAME).tar.xz $(HNAME)
 	md5sum $(HNAME).tar.xz > $(HNAME).tar.xz.md5
 	unlink $(HNAME)
@@ -363,9 +363,9 @@ clean-inst-w32: clean-inst-bin-w32 clean-inst-gcc-w32
 
 clean-inst: clean-inst-bin clean-inst-gcc clean-inst-libc
 
-.PHONY: clean-w32 clean-host
+.PHONY: clean-w32 clean-native
 
-clean-host: clean-bin clean-gcc clean-libc
+clean-native: clean-bin clean-gcc clean-libc
 
 clean-w32: clean-bin-w32 clean-gcc-w32
 
