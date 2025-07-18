@@ -369,7 +369,44 @@ clean-host: clean-bin clean-gcc clean-libc
 
 clean-w32: clean-bin-w32 clean-gcc-w32
 
+### Dot files in images/ showing build dependencies.
+
 .PHONY: dot png svg clean-dot clean-svg clean-png all-images clean-images
 
 dot png svg clean-dot clean-svg clean-png all-images clean-images:
 	cd images; make $@
+
+### Dependencies.
+
+.PHONY: deps deps-build deps-w32 deps-html deps-libc
+
+deps: deps-build deps-libc deps-html
+
+show = @echo "$1: $(shell $1 --version | head -n1)"
+
+deps-build:
+	@echo "== Build == "
+	$(call show,git       )
+	$(call show,make      )
+	$(call show,gcc       )
+	$(call show,as        )
+
+deps-libc:
+	@echo "== AVR-LibC == "
+	$(call show,autoheader)
+	$(call show,autoconf  )
+	$(call show,automake  )
+
+deps-w32: deps
+	@echo "== Host == "
+	$(call show,$(HOST_W32)-gcc)
+	$(call show,$(HOST_W32)-as )
+
+deps-html:
+	@true
+ifeq ($(HTML),1)
+	@echo "== HTML == "
+	$(call show,makeinfo  )
+	$(call show,doxygen   )
+	$(call show,fig2dev   )
+endif
