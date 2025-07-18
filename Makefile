@@ -34,8 +34,9 @@ help:
 	@echo "* CONF        ()  # Extra GCC Native Cross config args"
 	@echo "* CONF_W32    ()  # Extra GCC Canadian Cross config args"
 	@echo ""
-	@echo "In order to build a GCC branch, use TAG_GCC=releases/gcc-15."
-	@echo "In order to build a LibC release, use TAG_LIBC=avr-libc-2_2_1-release."
+	@echo "To build a GCC branch, use TAG_GCC=releases/gcc-15."
+	@echo "To build a Binutils branch, use TAG_BIN=binutils-2_45-branch."
+	@echo "To build a LibC release, use TAG_LIBC=avr-libc-2_2_1-release."
 	@echo ""
 
 # So that | tee doesn't spoil the exit status.
@@ -59,7 +60,7 @@ HTML ?= 1
 Git = git clone --depth 1 --branch
 
 # Binutils tags are like binutils-2_42.
-# Binutils branches are like master.
+# Binutils branches are like binutils-2_45-branch or master.
 GIT_BIN = git://sourceware.org/git/binutils-gdb.git
 TAG_BIN ?= binutils-2_44
 
