@@ -27,7 +27,7 @@ help:
 	@echo "* HOST_W32    (i686-w64-mingw32)"
 	@echo "* GCC_VERSION (15.1)"
 	@echo "* TAG_GCC     (releases/gcc-\$$(GCC_VERSION).0) except for v8.5.1"
-	@echo "* TAG_BIN     (binutils-2_44)"
+	@echo "* TAG_BIN     (binutils-2_45)"
 	@echo "* TAG_LIBC    (main)"
 	@echo "* HTML        (1)"
 	@echo "* PDF         (0)"
