@@ -30,6 +30,7 @@ help:
 	@echo "* TAG_BIN     (binutils-2_44)"
 	@echo "* TAG_LIBC    (main)"
 	@echo "* HTML        (1)"
+	@echo "* PDF         (0)"
 	@echo "* AVRDUDE_VERSION (8.1)"
 	@echo "* CONF        ()  # Extra GCC Native Cross config args"
 	@echo "* CONF_W32    ()  # Extra GCC Canadian Cross config args"
@@ -54,6 +55,9 @@ BUILD = $(shell $(PWD)/src-libc/config.guess)
 
 # Build and install HTML documentation.
 HTML ?= 1
+
+# Build and install PDF documentation.
+PDF ?= 0
 
 # For now, we only support cloning from Git repos.
 # Notice that after --branch there may be a branch or tag name.
@@ -120,6 +124,7 @@ TEEa := 2>&1 | tee -a $(PWD)
 E = export PATH=$(PREFIX)/bin:$$PATH;
 
 H = if [ x$(HTML) = x1 ]; then
+P = if [ x$(PDF) = x1 ]; then
 
 STAMP = echo timestamp >
 RM = rm -rf --
@@ -142,12 +147,14 @@ s-obj-bin: s-conf-bin
 	echo "=== $@ ===" $(TEE)/obj-bin.log
 	cd obj-bin;    make $J      $(TEEa)/obj-bin.log
 	$H cd obj-bin; make $J html $(TEEa)/obj-bin.log; fi
+	$P cd obj-bin; make $J pdf  $(TEEa)/obj-bin.log; fi
 	$(STAMP) $@
 
 s-inst-bin: s-obj-bin
 	echo "=== $@ ===" $(TEE)/inst-bin.log
 	cd obj-bin;    make $J install      $(TEEa)/inst-bin.log
 	$H cd obj-bin; make $J install-html $(TEEa)/inst-bin.log; fi
+	$P cd obj-bin; make $J install-pdf  $(TEEa)/inst-bin.log; fi
 	$(STAMP) $@
 
 s-conf-bin-w32: s-src-bin
@@ -166,6 +173,7 @@ s-inst-bin-w32: s-obj-bin-w32
 	echo "=== $@ ===" $(TEE)/inst-bin-w32.log
 	cd obj-bin-w32; make $J install                           $(TEEa)/inst-bin-w32.log
 	$H cd obj-bin;  make $J install-html prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
+	$P cd obj-bin;  make $J install-pdf  prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
 	$(STAMP) $@
 
 ### GCC ###
@@ -188,6 +196,7 @@ s-obj-gcc: s-conf-gcc
 	echo "=== $@ ===" $(TEE)/obj-gcc.log
 	cd obj-gcc;    make $J      $(TEEa)/obj-gcc.log
 	$H cd obj-gcc; make $J html $(TEEa)/obj-gcc.log; fi
+	$P cd obj-gcc; make $J pdf  $(TEEa)/obj-gcc.log; fi
 	$(STAMP) $@
 
 s-inst-gcc: s-obj-gcc
@@ -195,6 +204,7 @@ s-inst-gcc: s-obj-gcc
 	cd obj-gcc;    make $J install-strip-host $(TEEa)/inst-gcc.log
 	cd obj-gcc;    make $J install-target     $(TEEa)/inst-gcc.log
 	$H cd obj-gcc; make $J install-html       $(TEEa)/inst-gcc.log; fi
+	$P cd obj-gcc; make $J install-pdf        $(TEEa)/inst-gcc.log; fi
 	$(STAMP) $@
 
 s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 s-inst-libc
@@ -215,7 +225,9 @@ s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 	$E cd obj-gcc;     make $J install-target prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 	$E cd obj-libc;    make $J install        prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
 	$H $E cd obj-gcc;  make $J install-html          prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
+	$P $E cd obj-gcc;  make $J install-pdf           prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
 	$H $E cd obj-libc/doc/api; make install-dox-html prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
+	$P $E cd obj-libc/doc/api; make install-dox-pdf  prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
 	$(RM) $(AVRDUDE_ZIP)
 	wget -nv $(AVRDUDE_ZIP_URL)                        $(TEEa)/inst-gcc-w32.log
 	cd $(PREFIX_W32)/bin; jar xf $(PWD)/$(AVRDUDE_ZIP) $(TEEa)/inst-gcc-w32.log
@@ -247,7 +259,9 @@ s-inst-libc: s-obj-libc
 	$E cd obj-libc;            make $J install       $(TEEa)/inst-libc.log
 	$H $E cd obj-libc/doc/api; make clean            $(TEEa)/inst-libc.log; fi
 	$H $E cd obj-libc/doc/api; make html             $(TEEa)/inst-libc.log; fi
+	$P $E cd obj-libc/doc/api; make pdf              $(TEEa)/inst-libc.log; fi
 	$H $E cd obj-libc/doc/api; make install-dox-html $(TEEa)/inst-libc.log; fi
+	$P $E cd obj-libc/doc/api; make install-dox-pdf  $(TEEa)/inst-libc.log; fi
 	$(STAMP) $@
 
 .PHONY: all-native all-w32 install-native install-w32
@@ -378,9 +392,9 @@ dot png svg clean-dot clean-svg clean-png all-images clean-images:
 
 ### Dependencies.
 
-.PHONY: deps deps-build deps-w32 deps-html deps-libc
+.PHONY: deps deps-build deps-w32 deps-html deps-pdf deps-libc
 
-deps: deps-build deps-libc deps-html
+deps: deps-build deps-libc deps-html deps-pdf
 
 show = @echo "$1: $(shell $1 --version | head -n1)"
 
@@ -409,4 +423,11 @@ ifeq ($(HTML),1)
 	$(call show,makeinfo  )
 	$(call show,doxygen   )
 	$(call show,fig2dev   )
+endif
+
+deps-pdf:
+	@true
+ifeq ($(PDF),1)
+	@echo "== PDF == "
+	$(call show,pdflatex  )
 endif
