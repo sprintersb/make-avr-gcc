@@ -133,6 +133,7 @@ RM = rm -rf --
 
 s-src-bin:
 	echo "=== $@ ===" $(TEE)/src-bin.log
+	$(RM) src-bin
 	$(Git) $(TAG_BIN) $(GIT_BIN) src-bin $(TEEa)/src-bin.log
 	$(STAMP) $@
 
@@ -180,6 +181,7 @@ s-inst-bin-w32: s-obj-bin-w32
 
 s-src-gcc:
 	echo "=== $@ ===" $(TEE)/src-gcc.log
+	$(RM) src-gcc
 	$(Git) $(TAG_GCC) $(GIT_GCC) src-gcc         $(TEEa)/src-gcc.log
 	cd src-gcc; ./contrib/gcc_update --touch     $(TEEa)/src-gcc.log
 	cd src-gcc; ./contrib/download_prerequisites $(TEEa)/src-gcc.log
@@ -238,6 +240,7 @@ s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 
 s-src-libc:
 	echo "=== $@ ===" $(TEE)/src-libc.log
+	$(RM) src-libc
 	$(Git) $(TAG_LIBC) $(GIT_LIBC) src-libc $(TEEa)/src-libc.log
 	cd src-libc; ./bootstrap                $(TEEa)/src-libc.log
 	$(STAMP) $@
