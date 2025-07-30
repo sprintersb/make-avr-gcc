@@ -2,44 +2,6 @@
 # ln -s $HOME/gnu/source/make-avr-gcc/Makefile Makefile
 # cp    $HOME/gnu/source/make-avr-gcc/Makefile .
 
-.PHONY: help
-
-help:
-	@echo "Make avr-gcc in Canadian Cross configuration for MinGW32."
-	@echo ""
-	@echo "The simplest way is to run"
-	@echo "    $$ make GCC_VERSION=8.5.1 -j88 JOBS=88 install-w32"
-	@echo "    $$ make GCC_VERSION=8.5.1 deploy-w32"
-	@echo "which will download and prepare the sources, configure, build"
-	@echo "and install a native-cross (which is needed for the canadian)"
-	@echo "and a canadian-cross."
-	@echo ""
-	@echo "make deploy-w32 will take whatever it finds in install-w32 and"
-	@echo ".tar.xz it with appropriate directory name, date and ABOUT.txt."
-	@echo ""
-	@echo "Notice that this Makefile assumes all required software has"
-	@echo "been installed on the build machine, including a GCC toolchain,"
-	@echo "a GCC cross compiler to i686-w64-mingw32 (or similar), LaTeX,"
-	@echo "Doxygen v1.9.6, fig2dev and probably many more."
-	@echo ""
-	@echo "Makefile variables that can be adjusted on the command line:"
-	@echo "* JOBS        (1)"
-	@echo "* HOST_W32    (i686-w64-mingw32)"
-	@echo "* GCC_VERSION (15.1)"
-	@echo "* TAG_GCC     (releases/gcc-\$$(GCC_VERSION).0) except for v8.5.1"
-	@echo "* TAG_BIN     (binutils-2_45)"
-	@echo "* TAG_LIBC    (main)"
-	@echo "* HTML        (1)"
-	@echo "* PDF         (0)"
-	@echo "* AVRDUDE_VERSION (8.1)"
-	@echo "* CONF        ()  # Extra GCC Native Cross config args"
-	@echo "* CONF_W32    ()  # Extra GCC Canadian Cross config args"
-	@echo ""
-	@echo "To build a GCC branch, use TAG_GCC=releases/gcc-15."
-	@echo "To build a Binutils branch, use TAG_BIN=binutils-2_45-branch."
-	@echo "To build a LibC release, use TAG_LIBC=avr-libc-2_2_1-release."
-	@echo ""
-
 # So that | tee doesn't spoil the exit status.
 SHELL=/usr/bin/bash
 .SHELLFLAGS = -o pipefail -ec
@@ -65,7 +27,7 @@ Git = git clone --depth 1 --branch
 
 # Binutils tags are like binutils-2_42.
 # Binutils branches are like binutils-2_45-branch or master.
-GIT_BIN = git://sourceware.org/git/binutils-gdb.git
+GIT_BIN ?= git://sourceware.org/git/binutils-gdb.git
 TAG_BIN ?= binutils-2_45
 
 GCC_VERSION ?= 15.1
@@ -77,24 +39,24 @@ AVRDUDE_VERSION ?= 8.1
 
 ifneq ($(GCC_VERSION),8.5.1)
 URL_GCC = https://gcc.gnu.org
-GIT_GCC = git://gcc.gnu.org/git/gcc.git
+GIT_GCC ?= git://gcc.gnu.org/git/gcc.git
 TAG_GCC ?= releases/gcc-$(GCC_VERSION).0
-CONF_GCC = --with-long-double=64
+CONF_GCC += --with-long-double=64
 else
 URL_GCC = https://github.com/sprintersb/avr-gcc-8
 GIT_GCC = https://github.com/sprintersb/avr-gcc-8.git
 TAG_GCC = releases/gcc-8
-CONF_GCC = --with-bugurl=https://github.com/sprintersb/avr-gcc-8/issues
+CONF_GCC += --with-bugurl=https://github.com/sprintersb/avr-gcc-8/issues
 endif
 
 # AVR-LibC tags are like avr-libc-2_2_1-release.
 # AVR-LibC branches are like main.
 
-GIT_LIBC = https://github.com/avrdudes/avr-libc.git
+GIT_LIBC ?= https://github.com/avrdudes/avr-libc.git
 TAG_LIBC ?= main
 
 # For now, disable GDB so we don't need GMP etc.
-CONF_BIN = --target=avr --disable-nls --disable-werror --disable-sim --disable-gdb
+CONF_BIN += --target=avr --disable-nls --disable-werror --disable-sim --disable-gdb
 CONF_BIN_W32 = $(CONF_BIN) --host=$(HOST_W32) --build=$(BUILD)
 
 CONF_GCC += --target=avr --enable-languages=c,c++
@@ -106,6 +68,44 @@ CONF_GCC_W32 += $(CONF_GCC) --host=$(HOST_W32) --build=$(BUILD) --enable-mingw-w
 CONF_GCC_W32 += $(CONF_W32)
 
 CONF_GCC += $(CONF)
+
+.PHONY: help
+
+help:
+	@echo "Make avr-gcc in Canadian Cross configuration for MinGW32."
+	@echo ""
+	@echo "The simplest way is to run"
+	@echo "    $$ make GCC_VERSION=8.5.1 -j88 JOBS=88 install-w32"
+	@echo "    $$ make GCC_VERSION=8.5.1 deploy-w32"
+	@echo "which will download and prepare the sources, configure, build"
+	@echo "and install a native-cross (which is needed for the canadian)"
+	@echo "and a canadian-cross."
+	@echo ""
+	@echo "make deploy-w32 will take whatever it finds in install-w32 and"
+	@echo ".tar.xz it with appropriate directory name, date and ABOUT.txt."
+	@echo ""
+	@echo "Notice that this Makefile assumes all required software has"
+	@echo "been installed on the build machine, including a GCC toolchain,"
+	@echo "a GCC cross compiler to i686-w64-mingw32 (or similar), LaTeX,"
+	@echo "Doxygen v1.9.6, fig2dev and probably many more."
+	@echo ""
+	@echo "Makefile variables that can be adjusted on the command line:"
+	@echo "* JOBS        ($(JOBS))"
+	@echo "* HOST_W32    ($(HOST_W32))"
+	@echo "* GCC_VERSION ($(GCC_VERSION))"
+	@echo "* TAG_GCC     (releases/gcc-\$$(GCC_VERSION).0) except for 8.5.1"
+	@echo "* TAG_BIN     ($(TAG_BIN))"
+	@echo "* TAG_LIBC    ($(TAG_LIBC))"
+	@echo "* HTML        ($(HTML))"
+	@echo "* PDF         ($(PDF))"
+	@echo "* AVRDUDE_VERSION ($(AVRDUDE_VERSION))"
+	@echo "* CONF        ()  # Extra GCC Native Cross config args"
+	@echo "* CONF_W32    ()  # Extra GCC Canadian Cross config args"
+	@echo ""
+	@echo "To build a GCC branch, use TAG_GCC=releases/gcc-15."
+	@echo "To build a Binutils branch, use TAG_BIN=binutils-2_45-branch."
+	@echo "To build a LibC release, use TAG_LIBC=avr-libc-2_2_1-release."
+	@echo ""
 
 # There is a bug where gcc/system.h defines abort() to fancy_abort(...),
 # but /usr/share/mingw-w64/include/msxml.h uses abort() in a declaration,
@@ -277,7 +277,7 @@ install-native: s-inst-bin s-inst-gcc s-inst-libc
 
 install-w32: s-inst-bin-w32 s-inst-gcc-w32 # sic! no s-inst-libc-w32
 
-.PHONY: deploy-w32
+.PHONY: deploy-w32 deploy-native
 
 GIT_ID = git log -n1 --pretty=format:'%H (%as) %s'
 
@@ -312,7 +312,7 @@ deploy-w32: ABOUT.txt
 	md5sum $(WNAME).tar.xz > $(WNAME).tar.xz.md5
 	unlink $(WNAME)
 
-deploy-x86_64: ABOUT.txt
+deploy-native: ABOUT.txt
 	cp ABOUT.txt install-native
 	ln -s install-native $(HNAME)
 	tar chfJ $(HNAME).tar.xz $(HNAME)
