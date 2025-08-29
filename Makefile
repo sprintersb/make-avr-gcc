@@ -112,7 +112,7 @@ help:
 # leading to a syntax error.  This is worked around now.
 CPPFLAGS_W32 = -DWIN32_LEAN_AND_MEAN -DCOM_NO_WINDOWS_H
 
-CONF_LIBC = --host=avr --build=$(BUILD)
+CONF_LIBC = --host=avr --build=$(BUILD) MAKE=$(MAKE)
 
 AVRDUDE_ZIP = avrdude-v$(AVRDUDE_VERSION)-windows-mingw-x64.zip
 AVRDUDE_ZIP_URL = https://github.com/avrdudes/avrdude/releases/download/v$(AVRDUDE_VERSION)/$(AVRDUDE_ZIP)
