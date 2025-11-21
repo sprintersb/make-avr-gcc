@@ -6,9 +6,6 @@
 SHELL=/usr/bin/bash
 .SHELLFLAGS = -o pipefail -ec
 
-JOBS ?= 1
-J = -j$(JOBS)
-
 PREFIX = $(PWD)/install-native
 PREFIX_W32 = $(PWD)/install-w32
 
@@ -75,7 +72,7 @@ help:
 	@echo "Make avr-gcc in Canadian Cross configuration for MinGW32."
 	@echo ""
 	@echo "The simplest way is to run"
-	@echo "    $$ $(MAKE) GCC_VERSION=8.5.1 -j88 JOBS=88 install-w32"
+	@echo "    $$ $(MAKE) GCC_VERSION=8.5.1 -j88 install-w32"
 	@echo "    $$ $(MAKE) GCC_VERSION=8.5.1 deploy-w32"
 	@echo "which will download and prepare the sources, configure, build"
 	@echo "and install a native-cross (which is needed for the canadian)"
@@ -90,7 +87,6 @@ help:
 	@echo "Doxygen v1.9.6, fig2dev and probably many more."
 	@echo ""
 	@echo "Makefile variables that can be adjusted on the command line:"
-	@echo "* JOBS        ($(JOBS))"
 	@echo "* HOST_W32    ($(HOST_W32))"
 	@echo "* GCC_VERSION ($(GCC_VERSION))"
 	@echo "* TAG_GCC     (releases/gcc-\$$(GCC_VERSION).0) except for 8.5.1"
@@ -146,16 +142,16 @@ s-conf-bin: s-src-bin
 
 s-obj-bin: s-conf-bin
 	echo "=== $@ ===" $(TEE)/obj-bin.log
-	cd obj-bin;    $(MAKE) $J      $(TEEa)/obj-bin.log
-	$H cd obj-bin; $(MAKE) $J html $(TEEa)/obj-bin.log; fi
-	$P cd obj-bin; $(MAKE) $J pdf  $(TEEa)/obj-bin.log; fi
+	cd obj-bin;    $(MAKE)      $(TEEa)/obj-bin.log
+	$H cd obj-bin; $(MAKE) html $(TEEa)/obj-bin.log; fi
+	$P cd obj-bin; $(MAKE) pdf  $(TEEa)/obj-bin.log; fi
 	$(STAMP) $@
 
 s-inst-bin: s-obj-bin
 	echo "=== $@ ===" $(TEE)/inst-bin.log
-	cd obj-bin;    $(MAKE) $J install      $(TEEa)/inst-bin.log
-	$H cd obj-bin; $(MAKE) $J install-html $(TEEa)/inst-bin.log; fi
-	$P cd obj-bin; $(MAKE) $J install-pdf  $(TEEa)/inst-bin.log; fi
+	cd obj-bin;    $(MAKE) install      $(TEEa)/inst-bin.log
+	$H cd obj-bin; $(MAKE) install-html $(TEEa)/inst-bin.log; fi
+	$P cd obj-bin; $(MAKE) install-pdf  $(TEEa)/inst-bin.log; fi
 	$(STAMP) $@
 
 s-conf-bin-w32: s-src-bin
@@ -167,14 +163,14 @@ s-conf-bin-w32: s-src-bin
 
 s-obj-bin-w32: s-conf-bin-w32
 	echo "=== $@ ===" $(TEE)/obj-bin-w32.log
-	cd obj-bin-w32; $(MAKE) $J $(TEEa)/obj-bin-w32.log
+	cd obj-bin-w32; $(MAKE) $(TEEa)/obj-bin-w32.log
 	$(STAMP) $@
 
 s-inst-bin-w32: s-obj-bin-w32
 	echo "=== $@ ===" $(TEE)/inst-bin-w32.log
-	cd obj-bin-w32; $(MAKE) $J install                           $(TEEa)/inst-bin-w32.log
-	$H cd obj-bin;  $(MAKE) $J install-html prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
-	$P cd obj-bin;  $(MAKE) $J install-pdf  prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
+	cd obj-bin-w32; $(MAKE) install                           $(TEEa)/inst-bin-w32.log
+	$H cd obj-bin;  $(MAKE) install-html prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
+	$P cd obj-bin;  $(MAKE) install-pdf  prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
 	$(STAMP) $@
 
 ### GCC ###
@@ -196,17 +192,17 @@ s-conf-gcc: s-src-gcc s-inst-bin
 
 s-obj-gcc: s-conf-gcc
 	echo "=== $@ ===" $(TEE)/obj-gcc.log
-	cd obj-gcc;    $(MAKE) $J      $(TEEa)/obj-gcc.log
-	$H cd obj-gcc; $(MAKE) $J html $(TEEa)/obj-gcc.log; fi
-	$P cd obj-gcc; $(MAKE) $J pdf  $(TEEa)/obj-gcc.log; fi
+	cd obj-gcc;    $(MAKE)      $(TEEa)/obj-gcc.log
+	$H cd obj-gcc; $(MAKE) html $(TEEa)/obj-gcc.log; fi
+	$P cd obj-gcc; $(MAKE) pdf  $(TEEa)/obj-gcc.log; fi
 	$(STAMP) $@
 
 s-inst-gcc: s-obj-gcc
 	echo "=== $@ ===" $(TEE)/inst-gcc.log
-	cd obj-gcc;    $(MAKE) $J install-strip-host $(TEEa)/inst-gcc.log
-	cd obj-gcc;    $(MAKE) $J install-target     $(TEEa)/inst-gcc.log
-	$H cd obj-gcc; $(MAKE) $J install-html       $(TEEa)/inst-gcc.log; fi
-	$P cd obj-gcc; $(MAKE) $J install-pdf        $(TEEa)/inst-gcc.log; fi
+	cd obj-gcc;    $(MAKE) install-strip-host $(TEEa)/inst-gcc.log
+	cd obj-gcc;    $(MAKE) install-target     $(TEEa)/inst-gcc.log
+	$H cd obj-gcc; $(MAKE) install-html       $(TEEa)/inst-gcc.log; fi
+	$P cd obj-gcc; $(MAKE) install-pdf        $(TEEa)/inst-gcc.log; fi
 	$(STAMP) $@
 
 s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 s-inst-libc
@@ -218,16 +214,16 @@ s-conf-gcc-w32: s-src-gcc s-inst-bin-w32 s-inst-libc
 
 s-obj-gcc-w32: s-conf-gcc-w32
 	echo "=== $@ ===" $(TEE)/obj-gcc-w32.log
-	$E cd obj-gcc-w32; $(MAKE) $J CPPFLAGS="$(CPPFLAGS_W32)" all-host $(TEEa)/obj-gcc-w32.log
+	$E cd obj-gcc-w32; $(MAKE) CPPFLAGS="$(CPPFLAGS_W32)" all-host $(TEEa)/obj-gcc-w32.log
 	$(STAMP) $@
 
 s-inst-gcc-w32: s-obj-gcc-w32 s-obj-gcc s-obj-libc
 	echo "=== $@ ===" $(TEE)/inst-gcc-w32.log
-	$E cd obj-gcc-w32; $(MAKE) $J install-strip-host                  $(TEEa)/inst-gcc-w32.log
-	$E cd obj-gcc;     $(MAKE) $J install-target prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
-	$E cd obj-libc;    $(MAKE) $J install        prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
-	$H $E cd obj-gcc;  $(MAKE) $J install-html          prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
-	$P $E cd obj-gcc;  $(MAKE) $J install-pdf           prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
+	$E cd obj-gcc-w32; $(MAKE) install-strip-host                  $(TEEa)/inst-gcc-w32.log
+	$E cd obj-gcc;     $(MAKE) install-target prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
+	$E cd obj-libc;    $(MAKE) install        prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log
+	$H $E cd obj-gcc;  $(MAKE) install-html          prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
+	$P $E cd obj-gcc;  $(MAKE) install-pdf           prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
 	$H $E cd obj-libc/doc/api; $(MAKE) install-dox-html prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
 	$P $E cd obj-libc/doc/api; $(MAKE) install-dox-pdf  prefix=$(PREFIX_W32) $(TEEa)/inst-gcc-w32.log; fi
 	$(RM) $(AVRDUDE_ZIP)
@@ -254,12 +250,12 @@ s-conf-libc: s-src-libc s-inst-gcc
 
 s-obj-libc: s-conf-libc
 	echo "=== $@ ===" $(TEE)/obj-libc.log
-	$E cd obj-libc; $(MAKE) $J $(TEEa)/obj-libc.log
+	$E cd obj-libc; $(MAKE) $(TEEa)/obj-libc.log
 	$(STAMP) $@
 
 s-inst-libc: s-obj-libc
 	echo "=== $@ ===" $(TEE)/inst-libc.log
-	$E cd obj-libc;            $(MAKE) $J install       $(TEEa)/inst-libc.log
+	$E cd obj-libc;            $(MAKE) install          $(TEEa)/inst-libc.log
 	$H $E cd obj-libc/doc/api; $(MAKE) clean            $(TEEa)/inst-libc.log; fi
 	$H $E cd obj-libc/doc/api; $(MAKE) html             $(TEEa)/inst-libc.log; fi
 	$P $E cd obj-libc/doc/api; $(MAKE) pdf              $(TEEa)/inst-libc.log; fi

@@ -12,11 +12,11 @@ $ make install-w32
 ```
 or
 ```
-$ make -j44 JOBS=44 GCC_VERSION=8.5.1 install-w32
+$ make -j44 GCC_VERSION=8.5.1 install-w32
 ```
 or for the the Native cross:
 ```
-$ make -j44 JOBS=44 GCC_VERSION=8.5.1 install-native
+$ make -j44 GCC_VERSION=8.5.1 install-native
 ```
 When building a toolchain in several steps, make sure that you are using
 the same values of Makefile variables like `GCC_VERSION` as listed below.
@@ -44,7 +44,6 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 
 | Variable | Default | Meaning |
 |---|---:|---|
-| `JOBS`        | `1` | Number of parallel `make` jobs.
 | `HOST_W32`    | `i686-w64-mingw32` | Host OS for the Canadian cross
 | `GCC_VERSION` | `15.1`             | GCC version
 | `TAG_GCC`     | `releases/gcc-$(GCC_VERSION).0` except for 8.5.1 | git tag/branch for GCC
