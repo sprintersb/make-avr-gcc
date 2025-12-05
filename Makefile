@@ -183,13 +183,7 @@ s-src-gcc:
 	cd src-gcc; ./contrib/gcc_update --touch     $(TEEa)/src-gcc.log
 	cd src-gcc; ./contrib/download_prerequisites $(TEEa)/src-gcc.log
 	if test -d "$(PATCHES)"; then \
-		echo "=== $@ PATCHES ===" $(TEEa)/src-gcc.log; \
-		for p in $(PATCHES)/gcc-*.diff $(PATCHES)/gcc-*.patch; do \
-			if [ -f "$$p" ]; then \
-				echo "$$p" $(TEEa)/src-gcc.log; \
-				(cd src-gcc && patch -p1 < ../$$p $(TEEa)/src-gcc.log);\
-			fi; \
-		done; \
+		./do-patches.sh apply $(PATCHES)/gcc src-gcc $(TEEa)/src-gcc.log; \
 	fi
 	$(STAMP) $@
 
@@ -310,12 +304,7 @@ HNAME = avr-gcc-$(GCC_VERSION)_$(shell date -u +'%F')_x86_64
 
 deploy-w32: ABOUT.txt
 	if test -d "$(PATCHES)"; then \
-		mkdir -p install-w32/share/patches; \
-		for p in $(PATCHES)/gcc-*.diff $(PATCHES)/gcc-*.patch; do \
-			if [ -f "$$p" ]; then \
-				cp $$p install-w32/share/patches; \
-			fi; \
-		done; \
+		./do-patches.sh copy $(PATCHES)/gcc install-w32; \
 	fi
 	echo >> ABOUT.txt
 	echo "=== AVRDUDE ==="  >> ABOUT.txt
@@ -328,12 +317,7 @@ deploy-w32: ABOUT.txt
 
 deploy-native: ABOUT.txt
 	if test -d "$(PATCHES)"; then \
-		mkdir -p install-native/share/patches; \
-		for p in $(PATCHES)/gcc-*.diff $(PATCHES)/gcc-*.patch; do \
-			if [ -f "$$p" ]; then \
-				cp $$p install-native/share/patches; \
-			fi; \
-		done; \
+		./do-patches.sh copy $(PATCHES)/gcc install-native; \
 	fi
 	cp ABOUT.txt install-native
 	ln -s install-native $(HNAME)
