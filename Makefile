@@ -150,6 +150,7 @@ s-obj-bin: s-conf-bin
 
 s-inst-bin: s-obj-bin
 	echo "=== $@ ===" $(TEE)/inst-bin.log
+	$(RM) $(PREFIX)
 	cd obj-bin;    $(MAKE) install      $(TEEa)/inst-bin.log
 	$H cd obj-bin; $(MAKE) install-html $(TEEa)/inst-bin.log; fi
 	$P cd obj-bin; $(MAKE) install-pdf  $(TEEa)/inst-bin.log; fi
@@ -169,6 +170,7 @@ s-obj-bin-w32: s-conf-bin-w32
 
 s-inst-bin-w32: s-obj-bin-w32
 	echo "=== $@ ===" $(TEE)/inst-bin-w32.log
+	$(RM) $(PREFIX_W32)
 	cd obj-bin-w32; $(MAKE) install                           $(TEEa)/inst-bin-w32.log
 	$H cd obj-bin;  $(MAKE) install-html prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
 	$P cd obj-bin;  $(MAKE) install-pdf  prefix=$(PREFIX_W32) $(TEEa)/inst-bin-w32.log; fi
