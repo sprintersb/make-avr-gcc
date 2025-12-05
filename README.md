@@ -45,7 +45,7 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 | Variable | Default | Meaning |
 |---|---:|---|
 | `HOST_W32`    | `i686-w64-mingw32` | Host OS for the Canadian cross
-| `GCC_VERSION` | `15.1`             | GCC version
+| `GCC_VERSION` | `15.2`             | GCC version
 | `TAG_GCC`     | `releases/gcc-$(GCC_VERSION).0` except for 8.5.1 | git tag/branch for GCC
 | `TAG_BIN`     | `binutils-2_45` | git tag/branch for Binutils
 | `TAG_LIBC`    | `main` | git tag/branch for AVR-LibC
@@ -56,6 +56,7 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 | `CONF_W32`    | &mdash; | Extra GCC Canadian cross configure args
 | `CONF_GCC`    | &mdash; | Extra GCC Native and Canadian config args
 | `CONF_BIN`    | &mdash; | Extra Binutils Native and Canadian config args
+| `PATCHES`     | &mdash; | Patches to apply to sources
 
 ## Dependencies
 

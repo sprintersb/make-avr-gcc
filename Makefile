@@ -97,6 +97,7 @@ help:
 	@echo "* AVRDUDE_VERSION ($(AVRDUDE_VERSION))"
 	@echo "* CONF        ()  # Extra GCC Native Cross config args"
 	@echo "* CONF_W32    ()  # Extra GCC Canadian Cross config args"
+	@echo "* PATCHES     ()  # Relative path to a folder with patches"
 	@echo ""
 	@echo "To build a GCC branch, use TAG_GCC=releases/gcc-15."
 	@echo "To build a Binutils branch, use TAG_BIN=binutils-2_45-branch."
@@ -181,6 +182,15 @@ s-src-gcc:
 	$(Git) $(TAG_GCC) $(GIT_GCC) src-gcc         $(TEEa)/src-gcc.log
 	cd src-gcc; ./contrib/gcc_update --touch     $(TEEa)/src-gcc.log
 	cd src-gcc; ./contrib/download_prerequisites $(TEEa)/src-gcc.log
+	if test -d "$(PATCHES)"; then \
+		echo "=== $@ PATCHES ===" $(TEEa)/src-gcc.log; \
+		for p in $(PATCHES)/gcc-*.diff $(PATCHES)/gcc-*.patch; do \
+			if [ -f "$$p" ]; then \
+				echo "$$p" $(TEEa)/src-gcc.log; \
+				(cd src-gcc && patch -p1 < ../$$p $(TEEa)/src-gcc.log);\
+			fi; \
+		done; \
+	fi
 	$(STAMP) $@
 
 s-conf-gcc: s-src-gcc s-inst-bin
@@ -299,6 +309,14 @@ WNAME = avr-gcc-$(GCC_VERSION)_$(shell date -u +'%F')_mingw32
 HNAME = avr-gcc-$(GCC_VERSION)_$(shell date -u +'%F')_x86_64
 
 deploy-w32: ABOUT.txt
+	if test -d "$(PATCHES)"; then \
+		mkdir -p install-w32/share/patches; \
+		for p in $(PATCHES)/gcc-*.diff $(PATCHES)/gcc-*.patch; do \
+			if [ -f "$$p" ]; then \
+				cp $$p install-w32/share/patches; \
+			fi; \
+		done; \
+	fi
 	echo >> ABOUT.txt
 	echo "=== AVRDUDE ==="  >> ABOUT.txt
 	echo $(AVRDUDE_ZIP_URL) >> ABOUT.txt
@@ -309,6 +327,14 @@ deploy-w32: ABOUT.txt
 	unlink $(WNAME)
 
 deploy-native: ABOUT.txt
+	if test -d "$(PATCHES)"; then \
+		mkdir -p install-native/share/patches; \
+		for p in $(PATCHES)/gcc-*.diff $(PATCHES)/gcc-*.patch; do \
+			if [ -f "$$p" ]; then \
+				cp $$p install-native/share/patches; \
+			fi; \
+		done; \
+	fi
 	cp ABOUT.txt install-native
 	ln -s install-native $(HNAME)
 	tar chfJ $(HNAME).tar.xz $(HNAME)
