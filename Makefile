@@ -310,6 +310,7 @@ deploy-w32: ABOUT.txt
 	echo "=== AVRDUDE ==="  >> ABOUT.txt
 	echo $(AVRDUDE_ZIP_URL) >> ABOUT.txt
 	cp ABOUT.txt install-w32
+	[ -e $(WNAME) ]	&& unlink $(WNAME)
 	ln -s install-w32 $(WNAME)
 	tar chfJ $(WNAME).tar.xz $(WNAME)
 	md5sum $(WNAME).tar.xz > $(WNAME).tar.xz.md5
@@ -320,6 +321,7 @@ deploy-native: ABOUT.txt
 		./do-patches.sh copy $(PATCHES)/gcc install-native; \
 	fi
 	cp ABOUT.txt install-native
+	[ -e $(HNAME) ]	&& unlink $(HNAME)
 	ln -s install-native $(HNAME)
 	tar chfJ $(HNAME).tar.xz $(HNAME)
 	md5sum $(HNAME).tar.xz > $(HNAME).tar.xz.md5
