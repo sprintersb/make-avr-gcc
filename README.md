@@ -47,7 +47,7 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 | `HOST_W32`    | `i686-w64-mingw32` | Host OS for the Canadian cross
 | `GCC_VERSION` | `15.2`             | GCC version
 | `TAG_GCC`     | `releases/gcc-$(GCC_VERSION).0` except for 8.5.1 | git tag/branch for GCC
-| `TAG_BIN`     | `binutils-2_45` | git tag/branch for Binutils
+| `TAG_BIN`     | `binutils-2_45_1` | git tag/branch for Binutils
 | `TAG_LIBC`    | `main` | git tag/branch for AVR-LibC
 | `HTML`        | `1`    | Include HTML documentation?
 | `PDF`         | `0`    | Include PDF documentation?

@@ -25,7 +25,7 @@ Git = git clone --depth 1 --branch
 # Binutils tags are like binutils-2_42.
 # Binutils branches are like binutils-2_45-branch or master.
 GIT_BIN ?= git://sourceware.org/git/binutils-gdb.git
-TAG_BIN ?= binutils-2_45
+TAG_BIN ?= binutils-2_45_1
 
 GCC_VERSION ?= 15.2
 
