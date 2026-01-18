@@ -47,8 +47,8 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 | `HOST_W32`    | `i686-w64-mingw32` | Host OS for the Canadian cross
 | `GCC_VERSION` | `15.2`             | GCC version
 | `TAG_GCC`     | `releases/gcc-$(GCC_VERSION).0` except for 8.5.1 | git tag/branch for GCC
-| `TAG_BIN`     | `binutils-2_45_1` | git tag/branch for Binutils
-| `TAG_LIBC`    | `main` | git tag/branch for AVR-LibC
+| `TAG_BIN`     | `binutils-2_45_1`        | git tag/branch for Binutils
+| `TAG_LIBC`    | `avr-libc-2_3_1-release` | git tag/branch for AVR-LibC
 | `HTML`        | `1`    | Include HTML documentation?
 | `PDF`         | `0`    | Include PDF documentation?
 | `AVRDUDE_VERSION` | `8.1` | Version of AVRDUDE to download and include in the Canadian cross tarball
@@ -56,6 +56,9 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 | `CONF_W32`    | &mdash; | Extra GCC Canadian cross configure args
 | `CONF_GCC`    | &mdash; | Extra GCC Native and Canadian config args
 | `CONF_BIN`    | &mdash; | Extra Binutils Native and Canadian config args
+| `GIT_BIN`     |`git://sourceware.org/git/binutils-gdb.git`|
+| `GIT_GCC`     |`git://gcc.gnu.org/git/gcc.git`            | except for 8.5.1
+| `GIT_LIBC`    |`https://github.com/avrdudes/avr-libc.git` |
 | `PATCHES`     | &mdash; | Patches to apply to sources
 
 ## Dependencies
