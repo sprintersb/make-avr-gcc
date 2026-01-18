@@ -51,7 +51,6 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 | `TAG_LIBC`    | `avr-libc-2_3_1-release` | git tag/branch for AVR-LibC
 | `HTML`        | `1`    | Include HTML documentation?
 | `PDF`         | `0`    | Include PDF documentation?
-| `AVRDUDE_VERSION` | `8.1` | Version of AVRDUDE to download and include in the Canadian cross tarball
 | `CONF`        | &mdash; | Extra GCC Native cross configure args
 | `CONF_W32`    | &mdash; | Extra GCC Canadian cross configure args
 | `CONF_GCC`    | &mdash; | Extra GCC Native and Canadian config args

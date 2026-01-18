@@ -94,7 +94,7 @@ help:
 	@echo "* TAG_LIBC    ($(TAG_LIBC))"
 	@echo "* HTML        ($(HTML))"
 	@echo "* PDF         ($(PDF))"
-	@echo "* AVRDUDE_VERSION ($(AVRDUDE_VERSION))"
+#	@echo "* AVRDUDE_VERSION ($(AVRDUDE_VERSION))"
 	@echo "* CONF        ()  # Extra GCC Native Cross config args"
 	@echo "* CONF_W32    ()  # Extra GCC Canadian Cross config args"
 	@echo "* GIT_BIN     ($(GIT_BIN))"
@@ -312,9 +312,9 @@ deploy-w32: ABOUT.txt
 	if test -d "$(PATCHES)"; then \
 		./do-patches.sh copy $(PATCHES)/gcc install-w32; \
 	fi
-	echo >> ABOUT.txt
-	echo "=== AVRDUDE ==="  >> ABOUT.txt
-	echo $(AVRDUDE_ZIP_URL) >> ABOUT.txt
+#	echo >> ABOUT.txt
+#	echo "=== AVRDUDE ==="  >> ABOUT.txt
+#	echo $(AVRDUDE_ZIP_URL) >> ABOUT.txt
 	cp ABOUT.txt install-w32
 	if [ -e $(WNAME) ]; then unlink $(WNAME); fi
 	ln -s install-w32 $(WNAME)
