@@ -46,11 +46,11 @@ TAG_GCC = releases/gcc-8
 CONF_GCC += --with-bugurl=https://github.com/sprintersb/avr-gcc-8/issues
 endif
 
-# AVR-LibC tags are like avr-libc-2_2_1-release.
+# AVR-LibC tags are like avr-libc-2_3_1-release.
 # AVR-LibC branches are like main.
 
 GIT_LIBC ?= https://github.com/avrdudes/avr-libc.git
-TAG_LIBC ?= main
+TAG_LIBC ?= avr-libc-2_3_1-release
 
 # For now, disable GDB so we don't need GMP etc.
 CONF_BIN += --target=avr --disable-nls --disable-werror --disable-sim --disable-gdb
