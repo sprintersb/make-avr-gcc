@@ -50,7 +50,7 @@ endif
 # AVR-LibC branches are like main.
 
 GIT_LIBC ?= https://github.com/avrdudes/avr-libc.git
-TAG_LIBC ?= avr-libc-2_3_1-release
+TAG_LIBC ?= avr-libc-2_3_2-release
 
 # For now, disable GDB so we don't need GMP etc.
 CONF_BIN += --target=avr --disable-nls --disable-werror --disable-sim --disable-gdb
