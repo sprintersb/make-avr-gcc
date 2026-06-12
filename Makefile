@@ -27,7 +27,7 @@ Git = git clone --depth 1 --branch
 GIT_BIN ?= git://sourceware.org/git/binutils-gdb.git
 TAG_BIN ?= binutils-2_46_1
 
-GCC_VERSION ?= 15.2
+GCC_VERSION ?= 16.1
 
 AVRDUDE_VERSION ?= 8.1
 
