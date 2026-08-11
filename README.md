@@ -45,10 +45,10 @@ the `TAG` variables below, which specify the GIT branch or tag to use.
 | Variable | Default | Meaning |
 |---|---:|---|
 | `HOST_W32`    | `i686-w64-mingw32` | Host OS for the Canadian cross
-| `GCC_VERSION` | `15.2`             | GCC version
+| `GCC_VERSION` | `16.2`             | GCC version
 | `TAG_GCC`     | `releases/gcc-$(GCC_VERSION).0` except for 8.5.1 | git tag/branch for GCC
-| `TAG_BIN`     | `binutils-2_45_1`        | git tag/branch for Binutils
-| `TAG_LIBC`    | `avr-libc-2_3_1-release` | git tag/branch for AVR-LibC
+| `TAG_BIN`     | `binutils-2_47`          | git tag/branch for Binutils
+| `TAG_LIBC`    | `avr-libc-2_3_2-release` | git tag/branch for AVR-LibC
 | `HTML`        | `1`    | Include HTML documentation?
 | `PDF`         | `0`    | Include PDF documentation?
 | `CONF`        | &mdash; | Extra GCC Native cross configure args
